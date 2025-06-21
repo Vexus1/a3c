@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Sequence, Callable
 from dataclasses import dataclass
 
 import torch
@@ -28,17 +28,17 @@ def unpack_batch(
     not_done_idx = []
     last_states = []
     for idx, exp in enumerate(batch):
-        states.append(np.array(exp.state, copy=False))
+        states.append(np.asarray(exp.state))
         actions.append(int(exp.action))
         rewards.append(exp.reward)
         if exp.last_state is not None:
             not_done_idx.append(idx)
-            last_states.append(np.array(exp.last_state, copy=False))
-    states_v = torch.FloatTensor(np.array(states, copy=False)).to(device)
+            last_states.append(np.asarray(exp.last_state))
+    states_v = torch.FloatTensor(np.asarray(states)).to(device)
     actions_t = torch.LongTensor(actions).to(device)
     rewards_np = np.array(rewards, dtype=np.float32)
     if not_done_idx:
-        last_states_v = torch.FloatTensor(np.array(last_states, copy=False)).to(device)
+        last_states_v = torch.FloatTensor(np.asarray(last_states)).to(device)
         last_vals_v = net(last_states_v)[1]
         last_vals_np = last_vals_v.data.cpu().numpy()[:, 0]
         rewards_np[not_done_idx] += last_val_gamma * last_vals_np
@@ -47,7 +47,7 @@ def unpack_batch(
 
 
 def data_func(
-    env: gym.Env, 
+    env: Callable[[], gym.Env], 
     net: A3C, 
     device: str, 
     train_queue: mp.Queue
