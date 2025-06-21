@@ -11,8 +11,17 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torch.multiprocessing as mp
 
-def make_env():
-    pass
+from constants import *
+from src.wrappers import wrap_env
+
+def make_env() -> gym.Env:
+    return wrap_env(gym.make(ENV_NAME))
+
+@dataclass(frozen=True)
+class TotalReward:
+    reward: float
+
+
 
 
 if __name__ == "__main__":

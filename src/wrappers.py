@@ -173,7 +173,7 @@ class ScaledFloatFrame(gym.ObservationWrapper):
         return np.array(observation).astype(np.float32) / 255.0
     
 
-def make_env(env_name, render_mode=None):
+def wrap_env(env_name, render_mode=None):
     """
     Creates a processed environment with a sequence of wrappers.
     Includes skipping frames, preprocessing images, and normalizing data.
