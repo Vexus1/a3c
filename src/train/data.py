@@ -60,8 +60,8 @@ def data_func(
     for exp in exp_source:
         new_rewards = exp_source.pop_rewards_steps()
         if new_rewards:
-            data = TotalReward(reward=np.mean(new_rewards))
-            train_queue.put(data)
+            mean_r = np.mean([r for r, _ in new_rewards])
+            train_queue.put(TotalReward(reward=mean_r))
         micro_batch.append(exp)
         if len(micro_batch) < MICRO_BATCH_SIZE:
             continue
