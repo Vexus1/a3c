@@ -5,7 +5,7 @@ from typing import Iterator, Callable, Sequence, Optional
 import numpy as np
 import gymnasium as gym
 
-from policy_agent import PolicyAgent
+from src.policy_agent import PolicyAgent
 
 
 @dataclass(frozen=True)

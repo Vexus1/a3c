@@ -4,7 +4,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from wrappers import LazyFrames
+from src.wrappers import LazyFrames
 
 def states_preprocessor(
     states: Sequence[np.ndarray | LazyFrames]
