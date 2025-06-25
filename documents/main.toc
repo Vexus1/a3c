@@ -6,21 +6,21 @@
 \contentsline {subsection}{\numberline {2.3}n-krokowa aktualizacja}{3}{subsection.2.3}%
 \contentsline {subsection}{\numberline {2.4}Synchroniczny A2C a asynchroniczny A3C}{3}{subsection.2.4}%
 \contentsline {paragraph}{A2C (Advantage Actor–Critic).}{3}{section*.2}%
-\contentsline {paragraph}{A3C (Asynchronous A\textsuperscript {3}C).}{3}{section*.3}%
-\contentsline {paragraph}{Równoległość na poziomie danych vs gradientów.}{3}{section*.4}%
-\contentsline {subsection}{\numberline {2.5}Funkcja straty}{3}{subsection.2.5}%
+\contentsline {paragraph}{A3C (Asynchronous Advantage Actor–Critic).}{3}{section*.3}%
+\contentsline {paragraph}{Istnieją dwa sposoby zrównoleglania metody aktor-krytyk:}{3}{section*.4}%
+\contentsline {paragraph}{Zrównoleglenie na poziomie danych vs gradientów.}{3}{section*.5}%
+\contentsline {subsection}{\numberline {2.5}Funkcja straty}{4}{subsection.2.5}%
 \contentsline {section}{\numberline {3}Środowisko \texttt {PongNoFrameskip-v4}}{4}{section.3}%
 \contentsline {subsection}{\numberline {3.1}Surowa przestrzeń obserwacji i akcji}{4}{subsection.3.1}%
 \contentsline {subsection}{\numberline {3.2}Pipeline przetwarzania danych}{4}{subsection.3.2}%
 \contentsline {subsection}{\numberline {3.3}Metryki używane w~eksperymentach}{5}{subsection.3.3}%
 \contentsline {section}{\numberline {4}Algorytm A3C}{5}{section.4}%
 \contentsline {subsection}{\numberline {4.1}Architektura sieci}{5}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}$\boldsymbol {n}$-krokowy zwrot i advantage}{5}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.2}$\boldsymbol {n}$-krokowy zwrot i advantage}{6}{subsection.4.2}%
 \contentsline {subsection}{\numberline {4.3}Mechanika asynchroniczna}{6}{subsection.4.3}%
-\contentsline {subsection}{\numberline {4.4}Pseudokod}{6}{subsection.4.4}%
-\contentsline {subsection}{\numberline {4.5}Konfiguracja CPU/GPU w implementacji}{6}{subsection.4.5}%
-\contentsline {section}{\numberline {5}Konfiguracja eksperymentu}{7}{section.5}%
+\contentsline {subsection}{\numberline {4.4}Konfiguracja CPU/GPU w implementacji}{6}{subsection.4.4}%
+\contentsline {section}{\numberline {5}Konfiguracja eksperymentu}{6}{section.5}%
 \contentsline {section}{\numberline {6}Wyniki}{7}{section.6}%
 \contentsline {subsection}{\numberline {6.1}Porównanie czasu treningu}{8}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2}Wariancja nagrody}{9}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.2}Wariancja nagrody}{8}{subsection.6.2}%
 \contentsline {subsection}{\numberline {6.3}Analiza efektywności}{9}{subsection.6.3}%

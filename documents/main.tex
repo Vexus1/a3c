@@ -21,6 +21,7 @@
 \usepackage[noend]{algpseudocode}
 
 \usepackage{geometry}
+\bibliographystyle{plplain} 
 \geometry{margin=2.5cm}
 
 \hypersetup{
@@ -112,7 +113,7 @@ Wartość stanu i wartość akcji definiujemy następująco:
 \subsection{Gradient polityki i aktor–krytyk}
 
 Twierdzenie o gradiencie polityki
-% \cite{Sutton1999policygradient,Lapan2018}
+\cite{Sutton1999policygradient,Lapan2018}
 pozwala zapisać pochodną funkcji celu
 $J(\theta)=\E_{s\sim d^{\pi_\theta}}\E_{a\sim\pi_\theta}[R_t]$
 w postaci:
@@ -122,7 +123,7 @@ w postaci:
   \bigl[\grad_\theta\!\log\pi_\theta(a|s)\,Q^{\pi_\theta}(s,a)\bigr].
   \label{eq:pg}
 \end{equation}
-Aktor–krytyk wprowadza aproksymację funkcji $Q$ za pomocą
+Aktor-krytyk wprowadza aproksymację funkcji $Q$ za pomocą
 krytyka $V_w(s)$ oraz \emph{advantage}
 $A^{\pi}(s,a)=Q^{\pi}(s,a)-V^{\pi}(s)$, co zmniejsza wariancję estymatora gradientu.
 
@@ -130,7 +131,7 @@ $A^{\pi}(s,a)=Q^{\pi}(s,a)-V^{\pi}(s)$, co zmniejsza wariancję estymatora gradi
 
 Zamiast pojedynczego kroku TD, A3C wykorzystuje
 $n$-krokowy zwrot
-% \cite{Lapan2018}
+\cite{Lapan2018}
 :
 \[
   R^{(n)}_t
@@ -155,15 +156,21 @@ Kilka procesów zbiera dane równolegle, lecz po każdym
 mini-batchu \emph{blokująco} agreguje gradienty i wykonuje
 wspólny krok optymalizatora („data parallel\,–\,synchronous”).
 
-\paragraph{A3C (Asynchronous A\textsuperscript{3}C).}
+\paragraph{A3C (Asynchronous Advantage Actor–Critic).}
 Każdy worker oblicza gradient
 zaraz po zebraniu własnego mini-batcha
 i \emph{natychmiast} aktualizuje wspólne wagi w pamięci RAM
-% (\emph{Hogwild!} style) \cite{Mnih2016A3C}.
+\cite{Mnih2016A3C}.
 Skutkuje to brakiem bariery synchronizacji i prawie liniowym wzrostem
 przepustowości przy zwiększaniu liczby rdzeni.
 
-\paragraph{Równoległość na poziomie danych vs gradientów.}
+\paragraph{Istnieją dwa sposoby zrównoleglania metody aktor-krytyk:} \cite{Lapan2018}
+\begin{itemize}
+  \item \textbf{Zrównoleglenie na poziomie danych} - Każdy proces ma własne środowisko i kopię sieci neuronowej. Samodzielnie zbiera dane (przejścia), oblicza gradienty i lokalnie aktualizuje swoją sieć. Co jakiś czas asynchronicznie przesyła gradienty do wspólnej, głównej sieci, która jest aktualizowana.
+  \item \textbf{Zrównoleglenie na poziomie gradientów} - Różne procesy obliczają gradienty równolegle na różnych danych. Gradienty są sumowane i używane do jednej wspólnej aktualizacji sieci neuronowej. Zaktualizowane wagi sieci neuronowej muszą być na bieżąco przekazywane do innych procesów.
+\end{itemize}
+
+\paragraph{Zrównoleglenie na poziomie danych vs gradientów.}
 W naszej implementacji stosujemy wyłącznie
 \emph{data parallelism}: każdy proces:
 \begin{enumerate}
@@ -174,14 +181,13 @@ W naszej implementacji stosujemy wyłącznie
 \end{enumerate}
 Nie używamy równoległości gradientów
 (\emph{model parallelism}),
-gdyż dysponujemy pojedynczą kartą RTX 2080; kopiowanie tensora
-między kilkoma GPU byłoby bardziej kosztowne niż zysk z równoległości.
+gdyż dysponujemy pojedynczą kartą RTX 2080 oraz ze względu na większe trudności w implementacji, a niższy zysk z prędkości w ramach optymalizacji.
 
 \subsection{Funkcja straty}
 
 Całkowita funkcja straty używana w eksperymencie, zgodnie
 z
-% ~\cite{Mnih2016A3C,Lapan2018}
+~\cite{Mnih2016A3C,Lapan2018}
 , to
 \begin{equation}
   \mathcal{L}
@@ -275,13 +281,6 @@ Efektem jest końcowy tensor
         Służy do porównania A2C (synchron.) i A3C (asynchron.).
 \end{itemize}
 
-\begin{figure}[h]
-  \centering
-  % \includegraphics[width=0.7\linewidth]{figures/preprocessing_pipeline.pdf}
-  \caption{Schemat przetwarzania klatki w pipeline’ie A3C.}
-  \label{fig:pipeline}
-\end{figure}
-
 \subsection*{Podsumowanie}
 
 Przedstawiony pipeline zmniejsza wymiar wejścia
@@ -321,14 +320,6 @@ architektury widocznej na rys.~\ref{fig:net}:
   \item \textbf{głowa wartości} – \(\mathrm{FC}_{1}\).
 \end{itemize}
 
-\begin{figure}[h]
-  \centering
-  % \includegraphics[width=.85\linewidth]{figures/a3c_net.pdf}
-  \caption{Architektura sieci A3C: wspólny ekstraktor cech
-           + dwie głowice (policy, value).}
-  \label{fig:net}
-\end{figure}
-
 \subsection{$\boldsymbol{n}$-krokowy zwrot i advantage}
 
 Dla każdego stanu $s_t$ i akcji $a_t$ obliczamy
@@ -360,41 +351,6 @@ złożoność czasowa jednej iteracji $\approx
 \frac{\text{czas symulacji}+ \text{backward}}{N_\text{proc}}$,
 co przyśpiesza uczenie prawie liniowo z~liczbą rdzeni
 (jak pokazują wyniki w~rozdz.~\ref{sec:results}).
-
-\subsection{Pseudokod}
-
-\begin{algorithm}[h]
-  \caption{Asynchroniczny worker A3C (wersja CPU)}
-  \label{alg:a3c_worker}
-  \begin{algorithmic}[1]
-  \Require wspólne wagi $\theta, w$, krok optymalizatora \textit{opt}
-  \State $t\gets 0$
-  \While{nieosiągnięto \textit{max\_frames}}
-      \State $s \gets$ \textit{env.reset()}
-      \Repeat
-          \State $a \sim \pi_\theta(\cdot|s)$
-          \State $(s',r,\textit{done})\gets\textit{env.step}(a)$
-          \State bufor $\gets$ bufor $\cup\,(s,a,r)$
-          \State $t \gets t+1$
-          \If{$\textit{done}$ \textbf{or} $|$bufor$|=n$}
-              \If{\textit{done}}
-                  \State $R\gets 0$
-              \Else
-                  \State $R\gets V_w(s')$
-              \EndIf
-              \For{elementy bufora od końca}
-                  \State $R \gets r_i + \gamma R$
-                  \State $g_\theta += \grad_\theta \log\pi_\theta(a_i|s_i)\,(R-V_w(s_i))$
-                  \State $g_w += \grad_w \tfrac12(R-V_w(s_i))^{2}$
-              \EndFor
-              \State \textbf{atomically} \textit{opt.step}$(g_\theta,g_w)$
-              \State wyzeruj bufor
-          \EndIf
-          \State $s\gets s'$
-      \Until{\textit{done}}
-  \EndWhile
-  \end{algorithmic}
-\end{algorithm}
 
 \subsection{Konfiguracja CPU/GPU w implementacji}
 
@@ -562,8 +518,28 @@ punktów (nagroda maksymalna dla \emph{Ponga}).
         oscylacji wartości krytyka.
 \end{enumerate}
 
+\begin{table}[h]
+  \centering
+  \caption{Wpływ pojedynczych zmian hiperparametrów na czas uczenia
+           oraz końcową nagrodę.}
+  \label{tab:hparam_ablation}
+  \begin{tabular}{@{}lcc@{}}
+    \toprule
+    \textbf{Zmodyfikowany hiperparametr} & \textbf{Czas uczenia} & \textbf{Reward} \\
+    \midrule
+    -                      & 44,33 min & 21 \\
+    \texttt{NUM\_ENVS = 8}                       & 39{,}9 min & 20 \\
+    \texttt{NUM\_ENVS = 2}                       & 1\,h 02\,min & 21 \\
+    \texttt{PROCESSES\_COUNT = 10}               & 47{,}8 min & 20 \\
+    \texttt{PROCESSES\_COUNT = 12}, \texttt{BATCH\_SIZE = 256} & 49{,}2 min & 20 \\
+    \texttt{LEARNING\_RATE = 0.002}              & 18{,}5 min & 19 \\
+    \texttt{LEARNING\_RATE = 0.003}              & 33{,}69 min & 19 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
 % ---------------------------------------------------------------
-\bibliographystyle{plplain}  % lub inny styl obsługujący jęz. polski
+ % lub inny styl obsługujący jęz. polski
 \bibliography{refs}
 
 

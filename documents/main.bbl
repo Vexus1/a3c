@@ -1,0 +1,18 @@
+\begin{thebibliography}{1}
+
+\bibitem{Lapan2018}
+Maxim Lapan.
+\newblock {\em Deep Reinforcement Learning Hands-On}.
+\newblock Packt Publishing, Birmingham, UK, wydanie 1, 2018.
+
+\bibitem{Mnih2016A3C}
+Volodymyr Mnih, Adrià Puigdomènech~Badia, Mehdi Mirza, Alex Graves, Tim Harley, Timothy~P. Lillicrap, David Silver, Koray Kavukcuoglu.
+\newblock Asynchronous methods for deep reinforcement learning.
+\newblock {\em arXiv preprint arXiv:1602.01783}, 2016.
+
+\bibitem{Sutton1999policygradient}
+Richard~S. Sutton, David McAllester, Satinder Singh, Yishay Mansour.
+\newblock Policy gradient methods for reinforcement learning with function approximation.
+\newblock {\em Advances in Neural Information Processing Systems 12}, strony 1057--1063, 2000.
+
+\end{thebibliography}
